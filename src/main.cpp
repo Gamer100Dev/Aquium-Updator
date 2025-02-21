@@ -18,6 +18,9 @@ void showNotification(const QString &title, const QString &message) {
     trayIcon->setVisible(true);
     trayIcon->showMessage(title, message, QSystemTrayIcon::Information, 3000);
 }
+void Clear_Output(QTextEdit* text){
+    text->clear();
+}
 int Check_For_Updates(QApplication &app, QTextEdit* &text){
     if (!text) {
         // Windowless case
@@ -74,7 +77,7 @@ int Check_For_Updates(QApplication &app, QTextEdit* &text){
                     showNotification("Update", "Your system has been updated successfully!");
                 }
                 
-            });
+            }); 
             Notif_serv.detach();
             return 0;
         }
@@ -102,16 +105,20 @@ int main(int argc, char* argv[]) {
         QWidget window;
         QTextEdit *text = new QTextEdit("", &window);
         window.setWindowTitle("Aquium Updator");
-        window.resize(800, 400);
+        window.setFixedSize(800, 400); 
         text->setGeometry(0, 0, 400, 400);
 
         QPushButton *button1 = new QPushButton("Check for updates", &window);
-        button1->setGeometry(450, 40, 150, 50);
-
+        button1->setGeometry(480, 40, 150, 50);
+        QPushButton *clear_botton = new QPushButton("Clear output!",&window);
+        clear_botton->setGeometry(480,100,150,50);
         QObject::connect(button1, &QPushButton::clicked, [&]() {
             Check_For_Updates(app,text);
         });
-
+        QObject::connect(clear_botton,&QPushButton::clicked, [&](){
+            Clear_Output(text);
+        });
+        
         window.show();
 
         return app.exec();  
