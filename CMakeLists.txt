@@ -6,7 +6,8 @@ project(AquiumUpdater)
 
 # Set C++17 standard
 set(CMAKE_CXX_STANDARD 17)
-
+set(CMAKE_AUTOMOC ON)
+find_package(Qt5 REQUIRED COMPONENTS Widgets Gui Core)
 # Use pkg-config to get Qt5 flags
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(Qt5 REQUIRED Qt5Core Qt5Widgets Qt5Gui)
