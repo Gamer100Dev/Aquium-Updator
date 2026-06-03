@@ -192,22 +192,29 @@ private slots:
 
     void checkUpdates()
     {
-        prepareUi();
-        currentMode = "check";
-        output->clear();
-        subtitleLabel->setText("Checking for updates...");
-        QProcess sudo_process;
-        QString program = "pkexec";
-        
+    prepareUi();
+    currentMode = "check";
+    output->clear();
+    subtitleLabel->setText("Checking for updates...");
+
+    #ifdef Q_OS_LINUX
         process->start("sh", {"-c", "checkupdates && flatpak remote-ls --updates"});
+    #elif defined(Q_OS_FREEBSD)
+        process->start("sh", {"-c", "pkg upgrade -n"});
+    #endif  
     }
+
 
     void updateSystem()
     {
         prepareUi();
         currentMode = "update";
         subtitleLabel->setText("Installing system updates...");
+        #ifdef Q_OS_LINUX
         process->start("pkexec", {"pacman", "-Syu", "--noconfirm"});
+        #elif defined(Q_OS_FreeBSD)
+        process->start("pkexec", {"pkg", "update", "-y"});
+        #endif
     }
 
     void updateSystemFlatpak()
@@ -253,7 +260,9 @@ private slots:
             {
                 subtitleLabel->setText("Updates available");
                 updateButton->show();
-                flatpakButton->show();
+                #ifdef Q_OS_LINUX
+                    flatpakButton->show();
+                #endif
                 trayIcon->showMessage("Aquium Updater", "Updates available");
             }
 
@@ -261,7 +270,9 @@ private slots:
         }
 
         updateButton->hide();
-        flatpakButton->hide();
+        #ifdef Q_OS_LINUX
+            flatpakButton->show();
+        #endif
 
         if (exitCode == 0)
         {
